@@ -117,13 +117,14 @@ function selItem() {
     var comptable = document.getElementById('cptable')
     for(var i=1; i< cptable.rows.length; i++) {
         cptable.rows[i].addEventListener('click', function() {
-            console.log('a')
+            monid = this.cells[4].innerHTML
 
             var cpdelbtn = document.getElementById("deletecp")
             cpdelbtn.addEventListener('click', function () {
                 var cpdict = {}
-                cpdict['mongo_id'] = this.cells[4].innerHTML
-                location.href = "/deletegoal?dict=" + JSON.stringify(compdict["mongo_id"])
+                cpdict['mongo_id'] = monid
+                console.log (this)
+                location.href = "/deletegoal?dict=" + JSON.stringify(cpdict["mongo_id"])
 
             });
         });
