@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+
+  <style>
+
+            input, select {
+
+            font-size: 12px;
+            font-weight: 400;
+            text-indent: 5px;
+            background: rgb(255, 255, 204);
+            padding: 5px;
+            border-radius: 5px;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-top-right-radius: 25px;
+            border-bottom-right-radius: 25px;
+        }
+  </style>
+
+
+    <h6 align="center">
+      <h6 class= "page-header" align="left"> Enter a Goal </h6>
+        <form id = "goalinput" action ="{{ url_for('insert_goal') }}" method = "POST" >
+            <input type="text" placeholder="Event Name" name="eventname" id = "eventname"> <br><br>
+          <input type="datetime-local" placeholder="Event Deadline" id = "eventdeadline" name="eventdeadline"> <br><br>
+          <select name = "eventpriority" id = "eventpriority" > <br><br>
+              <option value="" selected disabled hidden>Priority</option>
+              <option value = "chem"> chem </option>
+              <option value = "ther"> ther </option>
+              <option value = "nucl"> nucl </option>
+          </select>
+          <select name = "eventreminder" id = "eventreminder"> <br><br>
+              <option value="" selected disabled hidden>Remind Me</option>
+              <option value = "daily"> Daily </option>
+              <option value = "weekly"> Weekly </option>
+              <option value = "monthly"> Monthly </option>
+          </select>
+            <button class="btn btn-success" type="submit" id = "addgoal" onclick="saveGoal();">Add Goal</button>
+
+            <!--<button type="button" id = "updategoal" onclick="updateGoal();" disabled>Save</button>-->
+            <!--<button type="reset" id = "reset"  onclick="clearForm();" disabled>Reset</button>-->
+        </form>
+        <button class="btn btn-basic" id = "cancel" onclick="getAll();">Cancel</button>
+    </h6>
+{% endblock %}

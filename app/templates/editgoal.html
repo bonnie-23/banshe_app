@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+
+   <style>
+
+            input, select {
+
+            font-size: 12px;
+            font-weight: 400;
+            text-indent: 5px;
+            background: rgb(255, 255, 204);
+            padding: 5px;
+            border-radius: 5px;
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+            border-top-right-radius: 25px;
+            border-bottom-right-radius: 25px;
+        }
+    </style>
+
+    <h6 class= "page-header" align="left"> Edit Goal </h6>
+    <form action="{{ url_for('update_goal') }}" method = "POST">
+      <div class= "container" align="center">
+        <input type="text" placeholder="Event Name" id="eventname" name="eventname" value = "{{ dict['event_name'] }}">
+        <input type="datetime-local" placeholder="Event Deadline" id="eventdeadline" name="eventdeadline" value = "{{ dict['event_deadline'] }}">
+
+
+        <select id = "eventpriority" name = "eventpriority">
+          {% if dict['event_priority'] == 'chem'  %}
+
+              <option value = "chem" selected > chem </option>
+              <option value = "ther" > ther </option>
+              <option value = "nucl"> nucl </option>
+
+          {% elif dict['event_priority'] == 'ther'  %}
+
+              <option value = "chem"  > chem </option>
+              <option value = "ther" selected> ther </option>
+              <option value = "nucl"> nucl </option>
+
+          {% elif dict['event_priority'] == 'nucl'  %}
+            <option value = "chem"  > chem </option>
+            <option value = "ther" > ther </option>
+            <option value = "nucl" selected> nucl </option>
+
+          {% endif %}
+        </select>
+
+        <select id = "eventreminder" name = "eventreminder">
+          {% if dict['event_reminder'] == 'daily'  %}
+            <option value = "daily" selected> Daily </option>
+            <option value = "weekly"> Weekly </option>
+            <option value = "monthly"> Weekly </option>
+
+          {% elif dict['event_reminder'] == 'weekly'  %}
+            <option value = "daily" > Daily </option>
+            <option value = "weekly" selected> Weekly </option>
+            <option value = "monthly"> Weekly </option>
+
+          {% elif dict['event_reminder'] == 'monthly'  %}
+            <option value = "daily" > Daily </option>
+            <option value = "weekly" > Weekly </option>
+            <option value = "monthly" selected> Weekly </option>
+          {% endif %}
+        </select>
+        <input type="datetime-local" id="eventcreate" name="eventcreate" class="hidden" value="{{ dict['event_createdate'] }}">
+        <input type="text" id="mongoid" name="mongoid" class= "hidden" value = "{{ dict['mongo_id'] }}">
+        <button class="btn btn-success" type="submit" id = "updategoal" onclick="updateGoal();">Update</button>
+
+      </div>
+    </form >
+
+{% endblock %}

@@ -1,0 +1,183 @@
+{% extends "base.html" %}
+{% block content %}
+
+    <style>
+        body {
+            background: #adad85;
+        }
+
+
+        body, input, button{
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        table {
+            <!--border: 1.5px #DDD solid;-->
+            padding: 5px;
+            <!--background: #25b99a;-->
+            border-radius: 5px
+            }
+
+        td {
+            padding: 5px;
+            cursor: pointer;
+            transition: all .25s ease-in-out;
+            background: #ffffcc;
+            position: relative;
+            border-radius: 10px;
+            }
+
+        <!--tr {-->
+            <!--height: 2px-->
+            <!--border-radius: 10px;-->
+        <!--}-->
+
+        table.gltable{
+            position:relative;
+        }
+
+        td.button {
+            height: 0px;
+        }
+
+        <!--td.input{-->
+            <!--background: #ffffcc;-->
+            <!--position:relative;-->
+        <!--}-->
+
+        .hidden
+            {
+                display:none;
+            }
+
+        header {
+            width: 100%;
+            height: 80px;
+            position: fixed;
+            padding: 15px;
+            top: 0;
+            left: 0
+            z-index: 5;
+            background: #25b99a;
+            box-shadow: 0px 2px 4px rgba(44,62,80,0,15);
+            <!--border-bottom-right-radius: 10px;-->
+            <!--border-bottom-left-radius: 10px;-->
+            }
+
+        input[type=radio] {
+            width: 15px;
+            height: 15px;
+        }
+        input[type=checkbox] {
+            height: 30px
+        }
+
+    </style>
+
+<div class="page-header">
+    <button class="btn btn-success btn-block" id = "addgoal" onclick="addNew();">Add New Goal</button>
+
+</div>
+
+<div>
+
+    <label for = "today">today
+        <input type = "radio" id = "today" name="filter" value = "today" onclick="filterGoals();">
+    </label>
+    <label for = "this week">this week
+        <input type = "radio" id = "this week" name="filter" value = "this week" onclick="filterGoals();">
+    </label>
+    <label for = "this month">this month
+        <input type = "radio" id = "this month" name="filter" value = "this month" onclick="filterGoals();">
+    </label>
+    <label for = "showall">show all
+        <input type = "radio" id = "showall" name="filter" value = "showall" onclick="getAll();">
+    </label>
+
+
+
+</div> <br><br>
+   <div class="label"> <h4 class = "link">Active Goals</h4> </div>
+    <div  class = "">
+        <table class = "table  table-hover" id = "gltable">
+          <thead class = "thead-dark">
+            <tr class = "table-active">
+              <th scope = "col" class="hidden" id = "event_name">Event Name</th>
+              <th scope = "col" class="hidden" id = "event_deadline">Event Deadline</th>
+              <th scope = "col" class="hidden" id = "event_priority">Event Priority</th>
+                <th scope = "col" class="hidden" id = "event_reminder">Event Reminder</th>
+                <!--<th scope = "col" id = "donehead">Done</th>-->
+            </tr>
+            </thead>
+
+            {% for event in events['active'] %}
+                <tbody>
+                <tr  class = "goals" onclick="selItem();">
+                  <td headers = "event_name" >{{ event['event_name'] }}</td>
+                  <td class="hidden" headers = "event_deadline">{{ event['event_deadline'] }}</td>
+                  <td class="hidden" headers = "event_priority">{{ event['event_priority'] }}</td>
+                    <td class="hidden" headers = "event_reminder">{{ event['event_reminder'] }}</td>
+                    <td headers = "mongo_id" id = "mongoid" class = "hidden">{{ event['mongo_id'] }}</td>
+                    <td headers = "event_createdate" id = "createdate" class = "hidden">{{ event['event_createdate'] }}</td>
+                    <td class= "btn" align= "center" id="goalbtns">
+                        <button class="btn btn-success" id = "editgoal" onclick="selItem();">Edit</button>
+                        <button class="btn btn-warning" id = "deletegoal" onclick="selItem();">
+                            <img align="center"  src="delete.png">
+                        </button>
+                    </td>
+                    <td headers="event_status" align="center">
+                        <input type="checkbox" id = "chckHead" name = "chckHead" onclick="selItem();" />
+                    </td>
+
+
+                  <!--<div border = " 10px" id = "todoitems">-->
+                    <!--<table>-->
+                        <!--{% for todo in event['event_todolist'] %}-->
+                          <!--<tr>-->
+                            <!--<td>{{ todo['todo_name'] }}</td>-->
+                          <!--</tr>-->
+                        <!--{% endfor %}-->
+                    <!--</table>-->
+                  <!--</div>-->
+                    <!--<div class = "buttons">-->
+                        <!--<button></button>-->
+                        <!--<button></button>-->
+
+                    <!--</div>-->
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div> <br>
+
+    <div>
+       <div class="label"> <h4 class = "link">Completed Goals</h4> </div>
+        <table class = "table table-hover" id = "cptable">
+            <thead>
+                <tr class = "table-active">
+                  <th id = "comp_event_name">Event Name</th>
+                  <th class="hidden" id = "comp_event_deadline">Event Deadline</th>
+                  <th class="hidden" id = "comp_event_priority">Event Priority</th>
+                    <th class="hidden" id = "comp_event_reminder">Event Reminder</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            {% for event in events['completed'] %}
+                <tr  class = "goals" onclick="selItem();">
+                  <td headers = "comp_event_name" >{{ event['event_name'] }}</td>
+                  <td class="hidden" headers = "comp_event_deadline">{{ event['event_deadline'] }}</td>
+                  <td class="hidden" headers = "comp_event_priority">{{ event['event_priority'] }}</td>
+                  <td class="hidden" headers = "comp_event_reminder">{{ event['event_reminder'] }}</td>
+                  <td class = "hidden" headers = "comp_mongo_id" id = "comp_mongoid" >{{ event['mongo_id'] }}</td>
+                  <td id="compbtns">
+                      <button class="btn btn-warning" id = "deletecp" onclick="selItem();">
+                          <img src="delete.png">
+                      </button>
+                  </td>
+                </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div> <br>
+{% endblock %}
