@@ -255,11 +255,11 @@ def toggle_goal():
             eventrecord = makeevent(i)
             eventrecord.toggle_event(i['_id'],str(getbool(request.json['event_status'])))
 
-            print(eventrecord.status)
         # return render_template('index.html')
-        return render_template('response.html', insresult= request.json['event_status'])
+        # return render_template('response.html', insresult= request.json['event_status'])
+        return redirect(url_for('get_all_goals',page='start'))
     else:
-        return jsonify ('yes')
+        pass
 
 
 '''
