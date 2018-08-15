@@ -6,6 +6,7 @@ from .core import Event, DateSlice, Todo
 from datetime import datetime
 from bson.objectid import ObjectId
 
+from threading import Timer
 
 
 #class API:
@@ -41,6 +42,22 @@ from bson.objectid import ObjectId
 #        self.app.add_url_rule('/toggletodo/', 'toggletodo/', self.toggle_todo, methods=['GET', 'POST'])
 
 
+
+
+DATA = "data"
+def update_data(interval):
+    Timer(interval, update_data, [interval]).start()
+    # global DATA
+    # DATA = DATA + " updating..."
+
+
+# update data every second
+update_data(1)
+
+@app.route("/")
+def index():
+    return redirect(url_for('get_all_goals', page='start'))
+    # return redirect(url_for('get_all_goals', page='start'))
 
 
 
@@ -83,15 +100,23 @@ def getbool(check):
         return False
 
 def splitstat(cursor):
-    output, active, completed = {}, [], []
+    output, active, completed, duetoday = {}, [], [],[]
+    today = datetime.today().date()
     for i in cursor:
+        deadline = datetime.strptime(i['event_deadline'],'%Y-%m-%d %H:%M:%S')
+
         if i['event_status']=='False':
             active = makeeventlist(active,i)
+            if deadline.date() == today:
+                duetoday = makeeventlist(duetoday, i)
+
         elif i['event_status']=='True':
             completed = makeeventlist(completed, i)
+
+
     output['active']= active
     output['completed'] = completed
-
+    output['duetoday'] = duetoday
     return output
 
 '''
@@ -108,8 +133,8 @@ def get_all_goals(page):
 '''
 Get events within a range day, week, month using a slice object
 '''
-@app.route('/getgoalstoday', methods=['GET'])
-def get_goals_today():
+@app.route('/getgoalstomorrow', methods=['GET'])
+def get_goals_tomorrow():
     output = []
     for i in mongo.getall('event',{}):
         event = makeevent(i)
@@ -176,9 +201,7 @@ def new_goal():
 @app.route('/editgoal', methods = ['GET'])
 def edit_goal():
     dict= request.args.get('dict')
-    print(dict)
     return render_template("editgoal.html", dict = ast.literal_eval(dict), title = 'Edit')
-    # return dict
 
 
 
@@ -194,9 +217,10 @@ def insert_goal():
                                        'event_deadline': fixdate(request.form.get('eventdeadline')),
                                        'event_todolist': "[]",
                                        'event_reminder': request.form.get('eventreminder'),
-                                       'event_createdate': datetime.now().replace(second=0,microsecond=0)})
+                                       'event_createdate': datetime.now().replace(second=0,microsecond=0)
+                                  })
 
-        # return jsonify(request.form.get('eventdeadline'))
+
         eventrecord.insert_event()
         return redirect(url_for('get_all_goals',page='start'))
         #return  render_template('response.html', insresult = eventrecord.insert_event())
@@ -234,8 +258,9 @@ def delete_goal():
     goalrecord = mongo.getonerecord(monid,'event')
     for i in goalrecord:
         mongo.deleteevent(i["_id"])
-    print(monid)
-    return render_template("response.html", insresult ="Goal Deleted!")
+
+    return redirect(url_for('get_all_goals', page='start'))
+    # return render_template("response.html", insresult ="Goal Deleted!")
 
 '''Remove all documents'''
 @app.route('/removeall', methods=['GET'])
@@ -255,7 +280,6 @@ def toggle_goal():
             eventrecord = makeevent(i)
             eventrecord.toggle_event(i['_id'],str(getbool(request.json['event_status'])))
 
-        # return render_template('index.html')
         # return render_template('response.html', insresult= request.json['event_status'])
         return redirect(url_for('get_all_goals',page='start'))
     else:

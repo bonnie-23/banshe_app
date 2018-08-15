@@ -44,7 +44,7 @@ class Event(object):
 
         if self.name == "":
             return "Please enter Event Name"
-        elif self.deadline <= datetime.now() or self.deadline == "" :
+        elif self.deadline < datetime.now() or self.deadline == "" :
             return "Please select a future deadline"
         else:
             doc = {
@@ -54,7 +54,7 @@ class Event(object):
                 'event_status': self.status,
                 'event_reminder': self.reminder,
                 'event_deadline': str(self.deadline),
-                'event_createdate': self.createdate
+                'event_createdate': str(self.createdate)
             }
             mongo.insertrecord(doc,'event')
         return "Event was inserted"
@@ -201,7 +201,7 @@ class Timer(object):
 class DateSlice(Timer):
     def __init__(self,event):
         Timer.__init__(self,event)
-        self.day = self.now
+        self.day = self.now + timedelta(days = 1)
         self.week = [self.now,self.now + timedelta(days = 7)]
         self.month = [self.now,self.now + timedelta(days= 30)]
 

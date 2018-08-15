@@ -118,9 +118,20 @@ function selItem() {
     for(var i=1; i< cptable.rows.length; i++) {
         cptable.rows[i].addEventListener('click', function() {
             monid = this.cells[4].innerHTML
+            //                alert('are you sure you want to delete?')
 
             var cpdelbtn = document.getElementById("deletecp")
             cpdelbtn.addEventListener('click', function () {
+                $(function() {
+                    $( "#today" ).dialog({
+                    buttons: [{ id:"test","data-test":"data test", text: "Ok",
+                        click: function() {
+                                alert($('#test').data('test'));
+                                $( this ).dialog( "close" );
+                        }
+                    }]});
+                });
+
                 var cpdict = {}
                 cpdict['mongo_id'] = monid
                 console.log (this)
@@ -183,8 +194,8 @@ function toggleGoal(dict){
 //filter displayed goals by period
 function filterGoals () {
     var period = $("input:radio[name='filter']:checked").val()
-    if (period == "today"){
-        location.href = "/getgoalstoday";
+    if (period == "tomorrow"){
+        location.href = "/getgoalstomorrow";
         }
     else if (period == "this week"){
         location.href = "/getgoalsweek";
@@ -209,6 +220,78 @@ function clearForm() {
     document.getElementById('eventreminder').value = 'Remind Me'
     document.getElementById('updategoal').disabled = true
     document.getElementById('addgoal').disabled = false
+}
+
+//show goals due today
+//function dueGoals() {
+//    var executed = false;
+////    alert('start')
+//    return function() {
+//        if(!executed) {
+//            executed = true;
+//            alert('dont')
+//        }
+//
+//    }
+//}
+
+
+//function dueGoals() {
+//  var executed = false;
+////  console.log(!executed)
+//  function displayName() {
+//    if (!executed) {
+//        executed = true;
+//        alert(executed);
+//    }
+//
+//  }
+//  console.log(executed)
+//  executed=false
+//  return displayName();
+//  window.framekiller = false;
+//}
+
+
+function dueGoals() {
+
+    var events = $("#events").data("events");
+    setInterval(getDue,1000);
+
+    function getDue() {
+        cnt= events
+        var temp =JSON.parse(events.replace(/\'/g,'\"'))
+        var active_events = temp['active']
+
+        var i;
+
+        for(i=0; i < active_events.length; i++){
+            if (active_events[i]["event_deadline"] == getToday()){
+                alert("Deadline Arrived");
+            }
+        }
+
+
+    };
+
+    function getToday() {
+        var currentdate = new Date()
+        var today = currentdate.getFullYear() + "-" +
+        0 + (currentdate.getMonth()+1) + "-" +
+        currentdate.getDate() + " " +
+        currentdate.getHours() + ":" +
+        currentdate.getMinutes() + ":" +
+        "00"
+
+
+
+        return  today
+    };
+
+
+    function stopCheck() {
+        clearInterval(intervalID)
+    };
 }
 
 

@@ -1,6 +1,8 @@
 from flask import Flask
 from .mongo import MongoDB
 
+
+
 app = Flask(__name__)
 mongo = MongoDB()
 
