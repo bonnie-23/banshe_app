@@ -253,10 +253,11 @@ function clearForm() {
 //}
 
 
+//check every 60 seconds if deadline for goals have arrived
 function dueGoals() {
 
     var events = $("#events").data("events");
-    setInterval(getDue,1000);
+    setInterval(getDue,60000);
 
     function getDue() {
         cnt= events
