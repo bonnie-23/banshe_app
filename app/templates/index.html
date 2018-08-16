@@ -119,7 +119,7 @@
 
                 {% for event in events['active'] %}
                     <tbody>
-                    <tr  class = "goals" >
+                    <tr  class = "goals" onclick="selItem();">
                       <td headers = "event_name" >{{ event['event_name'] }}</td>
                       <td class="hidden" headers = "event_deadline">{{ event['event_deadline'] }}</td>
                       <td class="hidden" headers = "event_priority">{{ event['event_priority'] }}</td>
@@ -127,13 +127,13 @@
                         <td headers = "mongo_id" id = "mongoid" class = "hidden">{{ event['mongo_id'] }}</td>
                         <td headers = "event_createdate" id = "createdate" class = "hidden">{{ event['event_createdate'] }}</td>
                         <td class= "btn" align= "center" id="goalbtns">
-                            <button class="btn btn-success" id = "editgoal" onclick="selItem();"></button>
-                            <button class="btn btn-warning" id = "deletegoal" onclick="selItem();">
+                            <button class="btn btn-success edtbtn" id = "editgoal" onclick="selItem();"></button>
+                            <button class="btn btn-warning delbtn" id = "deletegoal" onclick="selItem();">
                                 <!--<img align="center"  src="delete.png">-->
                             </button>
                         </td>
                         <td headers="event_status" align="center">
-                            <input type="checkbox" id = "chckHead" name = "chckHead" onclick="selItem();" />
+                            <input type="checkbox" class="check" id = "chckHead" name = "chckHead" onclick="selItem();" />
                         </td>
 
 
@@ -172,14 +172,14 @@
 
                 <tbody>
                 {% for event in events['completed'] %}
-                    <tr  class = "goals" >
+                    <tr  class = "goals" onclick="selItem();">
                       <td headers = "comp_event_name" >{{ event['event_name'] }}</td>
                       <td class="hidden" headers = "comp_event_deadline">{{ event['event_deadline'] }}</td>
                       <td class="hidden" headers = "comp_event_priority">{{ event['event_priority'] }}</td>
                       <td class="hidden" headers = "comp_event_reminder">{{ event['event_reminder'] }}</td>
                       <td class = "hidden" headers = "comp_mongo_id" id = "comp_mongoid" >{{ event['mongo_id'] }}</td>
                       <td id="compbtns">
-                          <button class="btn btn-warning" id = "deletecp" onclick="selItem();">
+                          <button class="btn btn-warning delbtn" id = "deletecp" onclick="selItem();">
                               <!--<img src="delete.png">-->
                           </button>
                       </td>

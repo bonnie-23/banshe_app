@@ -275,16 +275,13 @@ toggle goal status
 '''
 @app.route('/togglegoal', methods=['POST'])
 def toggle_goal():
-    if request.method == 'POST':
-        record = mongo.getonerecord({'_id': ObjectId(request.json['mongo_id'])},'event')
-        for i in record:
-            eventrecord = makeevent(i)
-            eventrecord.toggle_event(i['_id'],str(getbool(request.json['event_status'])))
+    record = mongo.getonerecord({'_id': ObjectId(request.json['mongo_id'])},'event')
+    for i in record:
+        eventrecord = makeevent(i)
+        eventrecord.toggle_event(i['_id'],str(getbool(request.json['event_status'])))
 
-        # return render_template('response.html', insresult= request.json['event_status'])
-        return redirect(url_for('get_all_goals',page='start'))
-    else:
-        pass
+    # return render_template('response.html', insresult= request.json['event_status'])
+    return redirect(url_for('get_all_goals',page='start'))
 
 
 '''

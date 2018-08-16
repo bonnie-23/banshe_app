@@ -92,24 +92,29 @@ function selItem() {
             dict['event_reminder'] = this.cells[3].innerHTML
             dict['mongo_id'] = this.cells[4].innerHTML
             dict['event_createdate'] = create.format(fmt)
-            dict['event_status'] = JSON.stringify(chk.checked)
+
+
 
             //pass selected goal to edit page
-            var editbtn = document.getElementById("editgoal")
-            editbtn.addEventListener('click', function () {
+
+            $("button.edtbtn").click( function () {
                 location.href = "/editgoal?dict=" + JSON.stringify(dict)
             });
 
             //delete active selected goal
-            var delbtn = document.getElementById("deletegoal")
-            delbtn.addEventListener('click', function () {
+
+            $("button.delbtn").click( function () {
                 confirmAction(dict["mongo_id"])
             });
 
             //mark selected goal as complete
             var chk= document.getElementById("chckHead")
-            chk.addEventListener('change', function() {
-                if (chk.checked) { toggleGoal(dict) }
+            $("input.check").change( function() {
+                console.log("a")
+                if($(this).is(':checked')){
+                    dict['event_status'] = JSON.stringify($(this).is(':checked'))
+                    toggleGoal(dict)
+                }
             });
 
 
@@ -118,16 +123,20 @@ function selItem() {
     };
 
     //delete completed goal from list
-    var comptable = document.getElementById('cptable')
+    var cptable = document.getElementById('cptable')
 
     for(var i=1; i< cptable.rows.length; i++) {
         cptable.rows[i].addEventListener('click', function() {
+
             var monid = this.cells[4].innerHTML
             var goalname= this.cells[0].innerHTML
-            var cpdelbtn = document.getElementById("deletecp")
+            var cpdelbtn = document.getElementsByClassName("delbtn")
+
             var cpdict = {}
                 cpdict['mongo_id'] = monid
-            cpdelbtn.addEventListener('click', function () {
+
+            $("button.delbtn").click( function () {
+                console.log(this)
                 confirmAction(cpdict["mongo_id"])
             })
 
@@ -137,8 +146,9 @@ function selItem() {
 
 
 
+
 function confirmAction(mongo_id) {
-                       //confirm delete dialog
+                //confirm delete dialog
                 $(function() {
                     $( "#confirmdel" ).dialog({
                         autoOpen: true,
@@ -223,12 +233,11 @@ function toggleGoal(dict){
           contentType: "application/json;charset=UTF-8",
           dataType: "JSON",
           data: JSON.stringify(dict),
-//          success: function() {
-//            document.location.reload(true);
-//            getAll()
-//          }
+          success: function() {
+
+          }
         });
-   getAll();
+    window.location.reload()
 }
 
 //filter displayed goals by period
