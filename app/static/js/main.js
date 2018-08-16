@@ -63,9 +63,6 @@ function saveGoal() {
 
 
 
-
-
-
 //Select an event in active or completed lists
 function selItem() {
     $('#gltable').on('click', 'td', function () {
@@ -141,7 +138,7 @@ function selItem() {
             $("input.check").change( function() {
                 if($(this).is(':checked')){
                     dict['event_status'] = JSON.stringify($(this).is(':checked'));
-                    toggleGoal(dict);
+                    checkGoal(dict);
                 }
             });
 
@@ -243,7 +240,12 @@ function getGoal(checkitem) {
 }
 
 
-function toggleGoal(dict){
+function checkGoal(dict){
+
+    chck = document.getElementById("chckHead")
+
+    dict["event_status"]= JSON.stringify(true)
+
     $.ajax({
           url: "/togglegoal",
           type: "POST",
@@ -254,7 +256,7 @@ function toggleGoal(dict){
 
           }
         });
-    window.location.reload()
+    window.location.reload();
 }
 
 //filter displayed goals by period
@@ -299,17 +301,18 @@ function loadPage() {
 
     //Get list of events from MongoDB
     var events = $("#events").data("events");
-    setInterval(getDue,1000);
+    setInterval(getDue,8000);
 
     function getDue() {
-//        cnt= events
+
         var temp =JSON.parse(events.replace(/\'/g,'\"'))
         var active_events = temp['active']
 
         var i;
         for(i=0; i < active_events.length; i++){
             if (active_events[i]["event_deadline"] == getToday()){
-//                alert("Deadline Arrived");
+
+                goal=active_events[i]
                 name= active_events[i]["event_name"]
                 mongo_id= active_events[i]["mongo_id"]
                 $("#deadlinearr").dialog({
@@ -326,15 +329,15 @@ function loadPage() {
                                     confirmAction(mongo_id);
                                 },
                                 "Mark Complete": function() {
-                                  $( this ).dialog( "close" );
+                                  checkGoal(goal);
                                 }
                     }
                 })
-            }
-        }
+            };
+        };
 
 
-    };
+    }
 
     //Build string of todays date time
     function getToday() {
