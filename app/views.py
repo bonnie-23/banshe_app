@@ -238,7 +238,6 @@ replaces that event in mongodb to save changes
 @app.route('/updategoal', methods=['GET','POST'])
 def update_goal():
     if request.method == 'POST':
-        # goal = request.form.get('eventname')
         eventrecord = makeevent({
             'event_name': request.json['event_name'],
              'event_priority': request.json['event_priority'],
@@ -248,6 +247,7 @@ def update_goal():
              'event_reminder': request.json['event_reminder'],
              'event_createdate': fixdate(request.json['event_createdate'])
             })
+
         eventrecord.update(request.json['mongo_id'], eventrecord)
         return redirect(url_for('get_all_goals', page='start'))
 

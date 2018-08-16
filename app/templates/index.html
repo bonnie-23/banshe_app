@@ -72,8 +72,9 @@
             height: 10px
         }
 
-        div.ui-dialog {
+        .ui-dialog {
             background-color: #ffffcc !important;
+            overflow: visible;
         }
 
     </style>
@@ -83,26 +84,24 @@
 
     </div>
 
-    <body id = "events" data-events = "{{events}}" onload="javascript:dueGoals();">
-    <div>
+    <body id = "events" data-events = "{{events}}" onload="javascript:loadPage();">
+       <div>
 
-        <label for = "tomorrow">tomorrow
-            <input type = "radio" id = "tomorrow" name="filter" value = "tomorrow" onclick="filterGoals();">
+            <label for = "tomorrow">tomorrow
+                <input type = "radio" id = "tomorrow" name="filter" value = "tomorrow" onclick="filterGoals();">
 
-        </label>
-        <label for = "this week">this week
-            <input type = "radio" id = "this week" name="filter" value = "this week" onclick="filterGoals();">
-        </label>
-        <label for = "this month">this month
-            <input type = "radio" id = "this month" name="filter" value = "this month" onclick="filterGoals();">
-        </label>
-        <label for = "showall">show all
-            <input type = "radio" id = "showall" name="filter" value = "showall" onclick="getAll();">
-        </label>
+            </label>
+            <label for = "this week">this week
+                <input type = "radio" id = "this week" name="filter" value = "this week" onclick="filterGoals();">
+            </label>
+            <label for = "this month">this month
+                <input type = "radio" id = "this month" name="filter" value = "this month" onclick="filterGoals();">
+            </label>
+            <label for = "showall">show all
+                <input type = "radio" id = "showall" name="filter" value = "showall" onclick="getAll();">
+            </label>
 
-
-
-    </div> <br><br>
+       </div> <br><br>
        <div id= "activelabel" class="label"> <h4 class = "link">Active Goals</h4> </div>
 
         <div  id = activegoals class = "">
@@ -119,47 +118,50 @@
 
                 {% for event in events['active'] %}
                     <tbody>
-                    <tr  class = "goals" onclick="selItem();">
-                      <td headers = "event_name" >{{ event['event_name'] }}</td>
-                      <td class="hidden" headers = "event_deadline">{{ event['event_deadline'] }}</td>
-                      <td class="hidden" headers = "event_priority">{{ event['event_priority'] }}</td>
-                        <td class="hidden" headers = "event_reminder">{{ event['event_reminder'] }}</td>
-                        <td headers = "mongo_id" id = "mongoid" class = "hidden">{{ event['mongo_id'] }}</td>
-                        <td headers = "event_createdate" id = "createdate" class = "hidden">{{ event['event_createdate'] }}</td>
-                        <td class= "btn" align= "center" id="goalbtns">
-                            <button class="btn btn-success edtbtn" id = "editgoal" onclick="selItem();"></button>
-                            <button class="btn btn-warning delbtn" id = "deletegoal" onclick="selItem();">
-                                <!--<img align="center"  src="delete.png">-->
-                            </button>
-                        </td>
-                        <td headers="event_status" align="center">
-                            <input type="checkbox" class="check" id = "chckHead" name = "chckHead" onclick="selItem();" />
-                        </td>
 
 
-                      <!--<div border = " 10px" id = "todoitems">-->
-                        <!--<table>-->
-                            <!--{% for todo in event['event_todolist'] %}-->
-                              <!--<tr>-->
-                                <!--<td>{{ todo['todo_name'] }}</td>-->
-                              <!--</tr>-->
-                            <!--{% endfor %}-->
-                        <!--</table>-->
-                      <!--</div>-->
-                        <!--<div class = "buttons">-->
-                            <!--<button></button>-->
-                            <!--<button></button>-->
 
-                        <!--</div>-->
-                    </tr>
+                        <tr  class = "goals" onclick="selItem();">
+                          <td id="eventname" headers = "event_name" >{{ event['event_name'] }}</td>
+                          <td class="hidden" headers = "event_deadline">{{ event['event_deadline'] }}</td>
+                          <td class="hidden" headers = "event_priority">{{ event['event_priority'] }}</td>
+                            <td class="hidden" headers = "event_reminder">{{ event['event_reminder'] }}</td>
+                            <td headers = "mongo_id" id = "mongoid" class = "hidden mongoid">{{ event['mongo_id'] }}</td>
+                            <td headers = "event_createdate" id = "createdate" class = "hidden">{{ event['event_createdate'] }}</td>
+                            <td class= "btn" align= "center" id="goalbtns">
+                                <button class="btn btn-success edtbtn" id = "editgoal" onclick="selItem();"></button>
+                                <button class="btn btn-warning delbtn" id = "deletegoal" onclick="selItem();">
+                                    <!--<img align="center"  src="delete.png">-->
+                                </button>
+                            </td>
+                            <td headers="event_status" align="center">
+                                <input type="checkbox" class="check" id = "chckHead" name = "chckHead" onclick="selItem();" />
+                            </td>
+
+
+                          <!--<div border = " 10px" id = "todoitems">-->
+                            <!--<table>-->
+                                <!--{% for todo in event['event_todolist'] %}-->
+                                  <!--<tr>-->
+                                    <!--<td>{{ todo['todo_name'] }}</td>-->
+                                  <!--</tr>-->
+                                <!--{% endfor %}-->
+                            <!--</table>-->
+                          <!--</div>-->
+                            <!--<div class = "buttons">-->
+                                <!--<button></button>-->
+                                <!--<button></button>-->
+
+                            <!--</div>-->
+                        </tr>
+
                 {% endfor %}
               </tbody>
             </table>
         </div> <br>
-
         <div>
            <div class="label"> <h4 class = "link">Completed Goals</h4> </div>
-            <div id="confirmdel"> </div>
+
             <table class = "table table-hover" id = "cptable">
                 <thead>
                     <tr class = "table-active">
@@ -188,5 +190,39 @@
               </tbody>
             </table>
         </div> <br>
+        <div id="confirmdel"> </div>
+        <div id="deadlinearr">
+            <label id="notlabel"></label>
+        </div>
+        <form class= "editdiag" id="editdiag" title="Edit Goal">
+
+                <div class= "container" align="left">
+                    <input type="text" placeholder="Event Name" id="eventnam" class="eventnam"> <br><br>
+                    <input type="datetime-local" placeholder="Event Deadline" id="eventdeadline" class="eventdeadline"><br><br>
+
+
+                    <select id = "eventpriority" class = "eventpriority"><br><br>
+
+                          <option value = "chem" > chem </option>
+                          <option value = "ther" > ther </option>
+                          <option value = "nucl"> nucl </option>
+                    </select>
+
+                    <select id = "eventreminder" class = "eventreminder"><br><br>
+                        <option value = "daily"> Daily </option>
+                        <option value = "weekly"> Weekly </option>
+                        <option value = "monthly"> Monthly </option>
+                     </select>
+
+                    <input type="datetime-local" id="eventcreate" name="eventcreate" class="hidden eventcreate"><br><br>
+                    <input type="text" id="mongid" name="mongid" class= "hidden mongid">
+
+              </div>
+
+        </form>
     {% endblock %}
+
+
+
+
 </body>

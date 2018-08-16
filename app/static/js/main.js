@@ -81,9 +81,11 @@ function selItem() {
             var chk= document.getElementById("chckHead")
 
             var fmt = 'YYYY-MM-DDTHH:mm'
+            var editdeadline = this.cells[1].innerHTML
             var dead = moment.utc(this.cells[1].innerHTML,fmt)
             var create = moment.utc(this.cells[5].innerHTML,fmt)
             var date = new Date()
+
 
             var dict = {}
             dict['event_name'] = this.cells[0].innerHTML
@@ -95,14 +97,41 @@ function selItem() {
 
 
 
-            //pass selected goal to edit page
 
+            //edit active selected goal
             $("button.edtbtn").click( function () {
-                location.href = "/editgoal?dict=" + JSON.stringify(dict)
+                $("#editdiag").dialog({
+                    autoOpen: true,
+                    resizable: false,
+                    modal: true,
+                    width: 400,
+                    height:350,
+                    open: function () {
+                         var form = document.getElementById("editdiag");
+                         form.style.visibility = "visible";
+                         $('#eventnam').val(dict['event_name']);
+                         $('#eventdeadline').val(dict['event_deadline']);
+                         $('#eventpriority').val(dict['event_priority']);
+                         $('#eventreminder').val(dict['event_reminder']);
+                         $('#eventcreate').val(dict['event_createdate']);
+                         $('#mongid').val(dict['mongo_id']);
+
+                    },
+                    close: getAll,
+                    buttons: {
+                        "save": function () {
+                            updateGoal();
+                            getAll();
+                        },
+                        "cancel": function () {
+                            $(this).dialog("close");
+                        }
+                    }
+                });
+
             });
 
             //delete active selected goal
-
             $("button.delbtn").click( function () {
                 confirmAction(dict["mongo_id"])
             });
@@ -110,10 +139,9 @@ function selItem() {
             //mark selected goal as complete
             var chk= document.getElementById("chckHead")
             $("input.check").change( function() {
-                console.log("a")
                 if($(this).is(':checked')){
-                    dict['event_status'] = JSON.stringify($(this).is(':checked'))
-                    toggleGoal(dict)
+                    dict['event_status'] = JSON.stringify($(this).is(':checked'));
+                    toggleGoal(dict);
                 }
             });
 
@@ -136,7 +164,6 @@ function selItem() {
                 cpdict['mongo_id'] = monid
 
             $("button.delbtn").click( function () {
-                console.log(this)
                 confirmAction(cpdict["mongo_id"])
             })
 
@@ -156,14 +183,6 @@ function confirmAction(mongo_id) {
                         height: "auto",
                         title: 'Confirm Delete',
                         modal: true,
-                        show: {
-                                effect: "blind",
-                                duration: 0
-                        },
-                        hide: {
-                                effect: "explode",
-                                duration: 0
-                        },
                         buttons: {
                                     "Delete": function() {
                                       location.href = "/deletegoal?dict=" + JSON.stringify(mongo_id);
@@ -178,14 +197,14 @@ function confirmAction(mongo_id) {
 }
 
 
-
+//commit changes to goal
 function updateGoal() {
-    var name = document.getElementById("eventname").value
+    var name = document.getElementById("eventnam").value
     var deadline = document.getElementById("eventdeadline").value
     var priority = document.getElementById("eventpriority").value
     var reminder = document.getElementById("eventreminder").value
     var create = document.getElementById("eventcreate").value
-    var monid = document.getElementById("mongoid").value
+    var monid = document.getElementById("mongid").value
 
 
     var dict = {}
@@ -195,8 +214,6 @@ function updateGoal() {
     dict['event_reminder'] = reminder
     dict['mongo_id'] = monid
     dict['event_createdate'] = create
-
-
 
     $.ajax({
         url: "/updategoal",
@@ -274,26 +291,52 @@ function clearForm() {
 
 
 //check every 60 seconds if deadline for goals have arrived
-function dueGoals() {
+function loadPage() {
+    //Hide Edit Form
+    var form = document.getElementById("editdiag");
+    form.style.visibility = "hidden";
+    form.style.display ="none";
 
+    //Get list of events from MongoDB
     var events = $("#events").data("events");
-    setInterval(getDue,60000);
+    setInterval(getDue,1000);
 
     function getDue() {
-        cnt= events
+//        cnt= events
         var temp =JSON.parse(events.replace(/\'/g,'\"'))
         var active_events = temp['active']
 
         var i;
         for(i=0; i < active_events.length; i++){
             if (active_events[i]["event_deadline"] == getToday()){
-                alert("Deadline Arrived");
+//                alert("Deadline Arrived");
+                name= active_events[i]["event_name"]
+                mongo_id= active_events[i]["mongo_id"]
+                $("#deadlinearr").dialog({
+                    autoOpen: true,
+                    resizable: false,
+                    height: "auto",
+                    title: 'Notification',
+                    modal: true,
+                    open: function () {
+                        $('#notlabel').html(name)
+                    },
+                    buttons: {
+                                "Delete": function() {
+                                    confirmAction(mongo_id);
+                                },
+                                "Mark Complete": function() {
+                                  $( this ).dialog( "close" );
+                                }
+                    }
+                })
             }
         }
 
 
     };
 
+    //Build string of todays date time
     function getToday() {
         var currentdate = new Date()
         var today = currentdate.getFullYear() + "-" +
