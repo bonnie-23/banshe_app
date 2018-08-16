@@ -9,29 +9,6 @@ from bson.objectid import ObjectId
 from threading import Timer
 
 
-#class API:
-#    def __init__(self):
-#        self.app = Flask(__name__)
-#        self.mongo = MongoDB()
-
-        #self.app.config['MONGO_DBNAME'] = 'banshe_events'
-        #self.app.config['MONGO_URI'] = 'mongodb://127.0.0.1:27017'
-        #self.mongo = PyMongo(self.app)
-
-#        self.app.add_url_rule('/getallgoals/', 'getallgoals/',self.get_all_goals,methods = ['GET'])
-#        self.app.add_url_rule('/getactivegoals/', 'getactivegoals/', self.get_active_goals, methods=['GET'])
-#        self.app.add_url_rule('/getgoalstoday/', 'getgoalstoday/',self.get_goals_today, methods = ['GET'])
-#        self.app.add_url_rule('/getgoalsweek/', 'getgoalsweek/', self.get_goals_week, methods=['GET'])
-#        self.app.add_url_rule('/getgoalsmonth/', 'getgoalsmonth/', self.get_goals_month, methods=['GET'])
-#        self.app.add_url_rule('/getonegoal/', 'getonegoal/', self.get_one_goal, methods=['GET','POST'])
-
-#        self.app.add_url_rule('/insertgoal/', 'insertgoal/', self.insert_goal, methods=['GET', 'POST'])
-#        self.app.add_url_rule('/updategoal/', 'updategoal/', self.update_goal, methods=['GET', 'POST'])
-#        self.app.add_url_rule('/togglegoal/', 'toggletegoal/', self.toggle_goal, methods=['GET', 'POST'])
-
-#        self.app.add_url_rule('/deleteonegoal/', 'deleteonegoal/', self.delete_goal, methods=['GET', 'POST'])
-#        self.app.add_url_rule('/removeallgoals/', 'removeallgoals/', self.remove_all, methods=['GET', 'POST'])
-
 
 #        self.app.add_url_rule('/inserttodo/', 'inserttodo/', self.insert_todo, methods=['GET', 'POST'])
 #        self.app.add_url_rule('/updatetodo/', 'updatetodo/', self.update_todo, methods=['GET', 'POST'])
@@ -42,22 +19,6 @@ from threading import Timer
 #        self.app.add_url_rule('/toggletodo/', 'toggletodo/', self.toggle_todo, methods=['GET', 'POST'])
 
 
-
-
-DATA = "data"
-def update_data(interval):
-    Timer(interval, update_data, [interval]).start()
-    # global DATA
-    # DATA = DATA + " updating..."
-
-
-# update data every second
-update_data(1)
-
-@app.route("/")
-def index():
-    return redirect(url_for('get_all_goals', page='start'))
-    # return redirect(url_for('get_all_goals', page='start'))
 
 
 
@@ -93,12 +54,18 @@ def fixdate(dateval):
     d= dateval.replace('T', ' ')
     return datetime.strptime(d.replace('-','/'),'%Y/%m/%d %H:%M')
 
+'''
+converts Javascript bool to Py bool
+'''
 def getbool(check):
     if check == 'true':
         return True
     else:
         return False
 
+'''
+groups active and completed tasks into separate lists
+'''
 def splitstat(cursor):
     output, active, completed, duetoday = {}, [], [],[]
     today = datetime.today().date()
@@ -118,6 +85,7 @@ def splitstat(cursor):
     output['completed'] = completed
     output['duetoday'] = duetoday
     return output
+
 
 '''
 Get all events in MongoDb create a dictionary for each record and append to a list
@@ -229,11 +197,7 @@ def insert_goal():
 
 
 '''
-takes goal and updates in mongoDB
-once user selects edit getongoal is run. 
-that record is now old goal.
-new goal is the modified 
-replaces that event in mongodb to save changes
+replaces that event in mongodb with event passed from Javascript form
 '''
 @app.route('/updategoal', methods=['GET','POST'])
 def update_goal():
@@ -252,7 +216,9 @@ def update_goal():
         return redirect(url_for('get_all_goals', page='start'))
 
 
-'''Remove single document from MongoDB'''
+'''
+Remove single document from MongoDB
+'''
 @app.route('/deletegoal', methods=['GET'])
 def delete_goal():
     monid = {'_id': ObjectId(ast.literal_eval(request.args.get('dict')))}
@@ -263,7 +229,9 @@ def delete_goal():
     return redirect(url_for('get_all_goals', page='start'))
     # return render_template("response.html", insresult ="Goal Deleted!")
 
-'''Remove all documents'''
+'''
+Remove all documents
+'''
 @app.route('/removeall', methods=['GET'])
 def remove_all():
     mongo.remove_all_records()
@@ -271,7 +239,7 @@ def remove_all():
 
 
 '''
-toggle goal status
+updates status of goal with on provided from Javascript form
 '''
 @app.route('/togglegoal', methods=['POST'])
 def toggle_goal():
@@ -279,10 +247,15 @@ def toggle_goal():
     for i in record:
         eventrecord = makeevent(i)
         eventrecord.toggle_event(i['_id'],str(getbool(request.json['event_status'])))
-
-        print(eventrecord.status)
-    # return render_template('response.html', insresult= request.json['event_status'])
     return redirect(url_for('get_all_goals',page='start'))
+
+
+
+
+'''
+Todo actions 
+----------------------------------------------------------------------------------------
+'''
 
 
 '''

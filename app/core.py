@@ -4,13 +4,12 @@ from bson.objectid import ObjectId
 
 
 
-#todo: event.insert todo, update, delete todo
-#todo: todo.update
-
 
 mongo = MongoDB()
 
-''' base object for banshe events'''
+''' 
+base object for banshe events
+'''
 class Event(object):
     def __init__(self, event_name,
                     event_priority,
@@ -33,13 +32,18 @@ class Event(object):
             self.createdate = event_createdate
 
 
-    '''change event status'''
+    '''
+    update event status with stat from server
+    '''
     def toggle_event(self, goalid, check):
         self.status = check
         #Toggle().toggle(self.status)
         self.update(goalid,self)
         #return self.status
 
+    '''
+    insert new event to MongoDB
+    '''
     def insert_event(self):
 
         if self.name == "":
@@ -59,9 +63,16 @@ class Event(object):
             mongo.insertrecord(doc,'event')
         return "Event was inserted"
 
+    '''
+    get a date slice object to manipulate date parts
+    '''
     def getslice(self):
         return DateSlice(self)
 
+
+    '''
+    replaces event in MongoDB with modified event 
+    '''
     def update(self,goalid, newgoal):
         try:
             modgoal ={
@@ -76,7 +87,9 @@ class Event(object):
         except:
             return 'Something went wrong'
 
-
+    '''
+    attaches a todo item to event todolist
+    '''
     def add_todo(self, goalid, name, status):
         todo = Todo(goalid, name, status)
         todo.save_todo()
@@ -100,8 +113,40 @@ class Event(object):
 
 
 
+class DateSlice(Timer):
+    def __init__(self,event):
+        Timer.__init__(self,event)
+        self.day = self.now + timedelta(days = 1)
+        self.week = [self.now,self.now + timedelta(days = 7)]
+        self.month = [self.now,self.now + timedelta(days= 30)]
 
 
+class Timer(object):
+    def __init__(self, event):
+        self. created_time = event.createdate
+        self.deadline = datetime.strptime(event.deadline,'%Y-%m-%d %H:%M:%S')
+        self.now = datetime.now()
+
+    def get_elapsed_time(self):
+        elap_time = self.now - self.created_time
+        return elap_time.days
+    def get_rem_time(self):
+        remtime = self.deadline - self.now
+        return remtime.days
+
+
+class Toggle(object):
+    def toggle(self, event):
+        return True if event == False else False
+
+
+
+
+
+'''
+Todo Objects
+---------------------------------------------------------------------------------------
+'''
 
 '''todo object'''
 class Todo(object):
@@ -180,35 +225,11 @@ class EventPriority(object):
         self.priority_name = name
         
 
-class Toggle(object):
-    def toggle(self, event):
-        return True if event == False else False
 
 
-class Timer(object):
-    def __init__(self, event):
-        self. created_time = event.createdate
-        self.deadline = datetime.strptime(event.deadline,'%Y-%m-%d %H:%M:%S')
-        self.now = datetime.now()
 
-    def get_elapsed_time(self):
-        elap_time = self.now - self.created_time
-        return elap_time.days
-    def get_rem_time(self):
-        remtime = self.deadline - self.now
-        return remtime.days
 
-class DateSlice(Timer):
-    def __init__(self,event):
-        Timer.__init__(self,event)
-        self.day = self.now + timedelta(days = 1)
-        self.week = [self.now,self.now + timedelta(days = 7)]
-        self.month = [self.now,self.now + timedelta(days= 30)]
 
-    '''
-    def __str__(self):
-        return 'DateSlice'
-    '''
 
 if __name__== '__main__':
     a=Reminder(Timer(Event()), 'Daily')

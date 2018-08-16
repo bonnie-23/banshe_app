@@ -299,12 +299,12 @@ function loadPage() {
     form.style.visibility = "hidden";
     form.style.display ="none";
 
-    //Get list of events from MongoDB
+    //Get list of events from MongoDB and set interval to check deadlines
     var events = $("#events").data("events");
-    setInterval(getDue,8000);
+    interval = setInterval(getDue,8000);
 
+    //Check each goal every interval to see if deadline has arrived
     function getDue() {
-
         var temp =JSON.parse(events.replace(/\'/g,'\"'))
         var active_events = temp['active']
 
@@ -327,9 +327,11 @@ function loadPage() {
                     buttons: {
                                 "Delete": function() {
                                     confirmAction(mongo_id);
+                                    clearInterval(interval)
                                 },
                                 "Mark Complete": function() {
                                   checkGoal(goal);
+                                  clearInterval(interval)
                                 }
                     }
                 })
