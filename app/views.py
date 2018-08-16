@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template, redirect, url_for
+from flask import Flask, jsonify, request, render_template, redirect, url_for,flash
 from app import mongo,app
 import ast
 import sys
@@ -210,22 +210,21 @@ gets event object and inserts into MongoDB
 '''
 @app.route('/insertgoal', methods=['GET','POST'])
 def insert_goal():
-    if request.form.get('eventname') and request.form.get('eventdeadline'):
-        eventrecord = makeevent({ 'event_name': request.form.get('eventname'),
-                                       'event_priority': request.form.get('eventpriority'),
-                                       'event_status': "False",
-                                       'event_deadline': fixdate(request.form.get('eventdeadline')),
-                                       'event_todolist': "[]",
-                                       'event_reminder': request.form.get('eventreminder'),
-                                       'event_createdate': datetime.now().replace(second=0,microsecond=0)
-                                  })
 
+    print(request.json['event_deadline'])
+    eventrecord = makeevent({ 'event_name': request.json['event_name'],
+                                   'event_priority': request.json['event_priority'],
+                                   'event_status': "False",
+                                   'event_deadline': fixdate(request.json['event_deadline']),
+                                   'event_todolist': "[]",
+                                   'event_reminder': request.json['event_reminder'],
+                                   'event_createdate': datetime.now().replace(second=0,microsecond=0)
+                              })
 
-        eventrecord.insert_event()
-        return redirect(url_for('get_all_goals',page='start'))
-        #return  render_template('response.html', insresult = eventrecord.insert_event())
-    else:
-        return render_template('response.html', insresult = 'Event or deadline is blank')
+    eventrecord.insert_event()
+    # flash('Goal added successfully')
+    return redirect( url_for('get_all_goals',page='start') )
+    #return  render_template('response.html', insresult = eventrecord.insert_event())
 
 
 
@@ -239,17 +238,19 @@ replaces that event in mongodb to save changes
 @app.route('/updategoal', methods=['GET','POST'])
 def update_goal():
     if request.method == 'POST':
-        goal = request.form.get('eventname')
+        # goal = request.form.get('eventname')
         eventrecord = makeevent({
-            'event_name': request.form.get('eventname'),
-             'event_priority': request.form.get('eventpriority'),
+            'event_name': request.json['event_name'],
+             'event_priority': request.json['event_priority'],
              'event_status': "False",
-             'event_deadline': fixdate(request.form.get('eventdeadline')),
+             'event_deadline': fixdate(request.json['event_deadline']),
              'event_todolist': "[]",
-             'event_reminder': request.form.get('eventreminder'),
-             'event_createdate': fixdate(request.form.get('eventcreate'))
+             'event_reminder': request.json['event_reminder'],
+             'event_createdate': fixdate(request.json['event_createdate'])
             })
-        return  render_template('response.html', insresult = eventrecord.update(request.form.get('mongoid'),eventrecord))
+        eventrecord.update(request.json['mongo_id'], eventrecord)
+        return redirect(url_for('get_all_goals', page='start'))
+
 
 '''Remove single document from MongoDB'''
 @app.route('/deletegoal', methods=['GET'])

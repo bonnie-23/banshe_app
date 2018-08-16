@@ -19,7 +19,7 @@
     </style>
 
     <h6 class= "page-header" align="left"> Edit Goal </h6>
-    <form action="{{ url_for('update_goal') }}" method = "POST">
+    <form id="editinput">
       <div class= "container" align="center">
         <input type="text" placeholder="Event Name" id="eventname" name="eventname" value = "{{ dict['event_name'] }}">
         <input type="datetime-local" placeholder="Event Deadline" id="eventdeadline" name="eventdeadline" value = "{{ dict['event_deadline'] }}">
@@ -65,9 +65,12 @@
         </select>
         <input type="datetime-local" id="eventcreate" name="eventcreate" class="hidden" value="{{ dict['event_createdate'] }}">
         <input type="text" id="mongoid" name="mongoid" class= "hidden" value = "{{ dict['mongo_id'] }}">
-        <button class="btn btn-success" type="submit" id = "updategoal" onclick="updateGoal();">Update</button>
+        <button class="btn btn-success" type="button" id = "updategoal" onclick="updateGoal(); return false">Update</button>
+
 
       </div>
     </form >
+    <button class="btn btn-basic"  id = "back" onclick="getAll();">Back</button>
+
 
 {% endblock %}

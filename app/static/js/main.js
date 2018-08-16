@@ -20,53 +20,54 @@
 //mainWindow.webContents.openDevTools()
 //}
 
-
-function saveGoal() {
-
-
-//    var form = document.getElementById('goalinput');
-//    form.onsubmit = function() {
-//        form.target = '_self';
-//        };
-
-
-
-//    document.location.href = "/insertgoal"index.html
-
-//    var goal = {}
-//            dict['event_name'] = document.getElementById('eventname').value
-//            dict['event_deadline'] = document.getElementById('eventdeadline').value
-//            dict['event_priority'] = document.getElementById('eventpriority').value
-//            dict['event_reminder'] = document.getElementById('eventreminder').value
-//
-//    $.ajax({
-//          url: "/insertgoal",
-//          type: "POST",
-//          contentType: "application/json;charset=UTF-8",
-//          dataType: "JSON",
-//          data: JSON.stringify(goal),
-//          success: function() {
-//            document.location.reload(true);
-
-//    success: function (response) {
-//      // Make sure the response actually has a redirect
-//      if (response.redirect) {
-//        console.log(response);
-//      }
-//    }
-
-}
-
-
 function addNew() {
     location.href = '/newgoal'
 }
 
 
-//populate input fields when table item selected
-function selItem() {
+function saveGoal() {
 
-    console.log(this)
+
+    var save = document.getElementById("addgoal")
+
+    var name = document.getElementById("eventname").value
+    var deadline = document.getElementById("eventdeadline").value
+    var priority = document.getElementById("eventpriority").value
+    var reminder = document.getElementById("eventreminder").value
+
+
+    if(name == "" || deadline == ""){
+        alert("blank values")
+        }
+    else {
+        var dict = {}
+        dict['event_name'] = name
+        dict['event_deadline'] = deadline
+        dict['event_priority'] = priority
+        dict['event_reminder'] = reminder
+
+        $.ajax({
+              url: "/insertgoal",
+              type: "POST",
+              contentType: "application/json;charset=UTF-8",
+              dataType: "JSON",
+              data: JSON.stringify(dict),
+              success: function(data){
+                alert(data);
+              }
+            });
+    }
+
+
+}
+
+
+
+
+
+
+//Select an event in active or completed lists
+function selItem() {
     $('#gltable').on('click', 'td', function () {
     $("tr").removeClass("highlighted");
       $(this).closest('tr').css({'background-color': 'grey'});
@@ -78,6 +79,7 @@ function selItem() {
         table.rows[i].addEventListener('click', function() {
 
             var chk= document.getElementById("chckHead")
+
             var fmt = 'YYYY-MM-DDTHH:mm'
             var dead = moment.utc(this.cells[1].innerHTML,fmt)
             var create = moment.utc(this.cells[5].innerHTML,fmt)
@@ -92,17 +94,19 @@ function selItem() {
             dict['event_createdate'] = create.format(fmt)
             dict['event_status'] = JSON.stringify(chk.checked)
 
-
+            //pass selected goal to edit page
             var editbtn = document.getElementById("editgoal")
             editbtn.addEventListener('click', function () {
                 location.href = "/editgoal?dict=" + JSON.stringify(dict)
             });
 
+            //delete active selected goal
             var delbtn = document.getElementById("deletegoal")
             delbtn.addEventListener('click', function () {
-                location.href = "/deletegoal?dict=" + JSON.stringify(dict["mongo_id"])
+                confirmAction(dict["mongo_id"])
             });
 
+            //mark selected goal as complete
             var chk= document.getElementById("chckHead")
             chk.addEventListener('change', function() {
                 if (chk.checked) { toggleGoal(dict) }
@@ -113,48 +117,84 @@ function selItem() {
 
     };
 
-
+    //delete completed goal from list
     var comptable = document.getElementById('cptable')
+
     for(var i=1; i< cptable.rows.length; i++) {
         cptable.rows[i].addEventListener('click', function() {
-            monid = this.cells[4].innerHTML
-            //                alert('are you sure you want to delete?')
-
+            var monid = this.cells[4].innerHTML
+            var goalname= this.cells[0].innerHTML
             var cpdelbtn = document.getElementById("deletecp")
-            cpdelbtn.addEventListener('click', function () {
-                $(function() {
-                    $( "#today" ).dialog({
-                    buttons: [{ id:"test","data-test":"data test", text: "Ok",
-                        click: function() {
-                                alert($('#test').data('test'));
-                                $( this ).dialog( "close" );
-                        }
-                    }]});
-                });
-
-                var cpdict = {}
+            var cpdict = {}
                 cpdict['mongo_id'] = monid
-                console.log (this)
-                location.href = "/deletegoal?dict=" + JSON.stringify(cpdict["mongo_id"])
+            cpdelbtn.addEventListener('click', function () {
+                confirmAction(cpdict["mongo_id"])
+            })
 
-            });
         });
-    }
+    };
 }
 
 
 
+function confirmAction(mongo_id) {
+                       //confirm delete dialog
+                $(function() {
+                    $( "#confirmdel" ).dialog({
+                        autoOpen: true,
+                        resizable: false,
+                        height: "auto",
+                        title: 'Confirm Delete',
+                        modal: true,
+                        show: {
+                                effect: "blind",
+                                duration: 0
+                        },
+                        hide: {
+                                effect: "explode",
+                                duration: 0
+                        },
+                        buttons: {
+                                    "Delete": function() {
+                                      location.href = "/deletegoal?dict=" + JSON.stringify(mongo_id);
+                                    },
+                                    Cancel: function() {
+                                      $( this ).dialog( "close" );
+                                    }
+                        }
 
-function updateGoal(dict) {
+                    });
+                });
+}
+
+
+
+function updateGoal() {
+    var name = document.getElementById("eventname").value
+    var deadline = document.getElementById("eventdeadline").value
+    var priority = document.getElementById("eventpriority").value
+    var reminder = document.getElementById("eventreminder").value
+    var create = document.getElementById("eventcreate").value
+    var monid = document.getElementById("mongoid").value
+
+
+    var dict = {}
+    dict['event_name'] = name
+    dict['event_deadline'] = deadline
+    dict['event_priority'] = priority
+    dict['event_reminder'] = reminder
+    dict['mongo_id'] = monid
+    dict['event_createdate'] = create
+
+
 
     $.ajax({
         url: "/updategoal",
-        type: "PUT",
+        type: "POST",
         contentType: "application/json;charset=UTF-8",
         dataType: "JSON",
-        data: JSON.stringify(dict),   // converts js value to JSON string
-            });
-    location.href = ''
+        data: JSON.stringify(dict)
+    });
 
 }
 
@@ -222,35 +262,6 @@ function clearForm() {
     document.getElementById('addgoal').disabled = false
 }
 
-//show goals due today
-//function dueGoals() {
-//    var executed = false;
-////    alert('start')
-//    return function() {
-//        if(!executed) {
-//            executed = true;
-//            alert('dont')
-//        }
-//
-//    }
-//}
-
-
-//function dueGoals() {
-//  var executed = false;
-////  console.log(!executed)
-//  function displayName() {
-//    if (!executed) {
-//        executed = true;
-//        alert(executed);
-//    }
-//
-//  }
-//  console.log(executed)
-//  executed=false
-//  return displayName();
-//  window.framekiller = false;
-//}
 
 
 //check every 60 seconds if deadline for goals have arrived
@@ -265,7 +276,6 @@ function dueGoals() {
         var active_events = temp['active']
 
         var i;
-
         for(i=0; i < active_events.length; i++){
             if (active_events[i]["event_deadline"] == getToday()){
                 alert("Deadline Arrived");
@@ -283,8 +293,6 @@ function dueGoals() {
         currentdate.getHours() + ":" +
         currentdate.getMinutes() + ":" +
         "00"
-
-
 
         return  today
     };

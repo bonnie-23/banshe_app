@@ -21,7 +21,7 @@
 
     <h6 align="center">
       <h6 class= "page-header" align="left"> Enter a Goal </h6>
-        <form id = "goalinput" action ="{{ url_for('insert_goal') }}" method = "POST" >
+        <form id = "goalinput" >
             <input type="text" placeholder="Event Name" name="eventname" id = "eventname"> <br><br>
           <input type="datetime-local" placeholder="Event Deadline" id = "eventdeadline" name="eventdeadline"> <br><br>
           <select name = "eventpriority" id = "eventpriority" > <br><br>
@@ -36,7 +36,7 @@
               <option value = "weekly"> Weekly </option>
               <option value = "monthly"> Monthly </option>
           </select>
-            <button class="btn btn-success" type="submit" id = "addgoal" onclick="saveGoal();">Add Goal</button>
+            <button class="btn btn-success" type="button" id = "addgoal" onclick="saveGoal(); return false">Add Goal</button>
 
             <!--<button type="button" id = "updategoal" onclick="updateGoal();" disabled>Save</button>-->
             <!--<button type="reset" id = "reset"  onclick="clearForm();" disabled>Reset</button>-->
