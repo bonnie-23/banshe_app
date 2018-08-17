@@ -30,35 +30,65 @@ function saveGoal() {
 
     var save = document.getElementById("addgoal")
 
-    var name = document.getElementById("eventname").value
-    var deadline = document.getElementById("eventdeadline").value
-    var priority = document.getElementById("eventpriority").value
-    var reminder = document.getElementById("eventreminder").value
 
 
-    if(name == "" || deadline == ""){
-        alert("blank values")
+    $("#insertdiag").dialog({
+        autoOpen: true,
+        resizable: false,
+        modal: true,
+        width: 400,
+        height:350,
+        open: function () {
+            var insform = document.getElementById("insertdiag");
+            insform.style.visibility = "visible";
+            insform.style.display = "block";
+        },
+        buttons: {
+                    "save": function () {
+
+                        var currentdate = new Date()
+                        var name = document.getElementById("ins_eventname").value
+                        var deadline = document.getElementById("ins_eventdeadline").value
+                        var priority = document.getElementById("ins_eventpriority").value
+                        var reminder = document.getElementById("ins_eventreminder").value
+
+                        if(name == "" || deadline == ""){
+                            alert("blank values")
+                        }
+                        else if (deadline < currentdate){
+                            alert("select future date and time")
+                        }
+                        else {
+                            var dict = {}
+                            dict['event_name'] = name
+                            dict['event_deadline'] = deadline
+                            dict['event_priority'] = priority
+                            dict['event_reminder'] = reminder
+
+                            $.ajax({
+                                  url: "/insertgoal",
+                                  type: "POST",
+                                  contentType: "application/json;charset=UTF-8",
+                                  dataType: "JSON",
+                                  data: JSON.stringify(dict),
+                                  success: function(data){
+                                    alert(data);
+                                  }
+                                });
+                            getAll();
+                        }
+
+
+                    },
+                    "cancel": function () {
+                        $(this).dialog("close");
+                    },
+                    "clear": function () {
+                        $(this).dialog("close");
+                    }
+
         }
-    else {
-        var dict = {}
-        dict['event_name'] = name
-        dict['event_deadline'] = deadline
-        dict['event_priority'] = priority
-        dict['event_reminder'] = reminder
-
-        $.ajax({
-              url: "/insertgoal",
-              type: "POST",
-              contentType: "application/json;charset=UTF-8",
-              dataType: "JSON",
-              data: JSON.stringify(dict),
-              success: function(data){
-                alert(data);
-              }
-            });
-    }
-
-
+    });
 }
 
 
@@ -106,10 +136,10 @@ function selItem() {
                     open: function () {
                          var form = document.getElementById("editdiag");
                          form.style.visibility = "visible";
-                         $('#eventnam').val(dict['event_name']);
-                         $('#eventdeadline').val(dict['event_deadline']);
-                         $('#eventpriority').val(dict['event_priority']);
-                         $('#eventreminder').val(dict['event_reminder']);
+                         $('#edit_eventname').val(dict['event_name']);
+                         $('#edit_eventdeadline').val(dict['event_deadline']);
+                         $('#edit_eventpriority').val(dict['event_priority']);
+                         $('#edit_eventreminder').val(dict['event_reminder']);
                          $('#eventcreate').val(dict['event_createdate']);
                          $('#mongid').val(dict['mongo_id']);
 
@@ -196,10 +226,10 @@ function confirmAction(mongo_id) {
 
 //commit changes to goal
 function updateGoal() {
-    var name = document.getElementById("eventnam").value
-    var deadline = document.getElementById("eventdeadline").value
-    var priority = document.getElementById("eventpriority").value
-    var reminder = document.getElementById("eventreminder").value
+    var name = document.getElementById("edit_eventname").value
+    var deadline = document.getElementById("edit_eventdeadline").value
+    var priority = document.getElementById("edit_eventpriority").value
+    var reminder = document.getElementById("edit_eventreminder").value
     var create = document.getElementById("eventcreate").value
     var monid = document.getElementById("mongid").value
 
@@ -295,9 +325,14 @@ function clearForm() {
 //check every 60 seconds if deadline for goals have arrived
 function loadPage() {
     //Hide Edit Form
-    var form = document.getElementById("editdiag");
-    form.style.visibility = "hidden";
-    form.style.display ="none";
+    var editform = document.getElementById("editdiag");
+    editform.style.visibility = "hidden";
+    editform.style.display ="none";
+
+    //Hide Ins Form
+    var insform = document.getElementById("insertdiag")
+    insform.style.visibility = "hidden";
+    insform.style.display ="none";
 
     //Get list of events from MongoDB and set interval to check deadlines
     var events = $("#events").data("events");

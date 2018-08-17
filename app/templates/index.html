@@ -80,7 +80,7 @@
     </style>
 
     <div class="page-header">
-        <button class="btn btn-success btn-block" id = "addgoal" onclick="addNew();">Add New Goal</button>
+        <button class="btn btn-success btn-block" id = "addgoal" onclick="saveGoal();">Add New Goal</button>
 
     </div>
 
@@ -197,18 +197,17 @@
         <form class= "editdiag" id="editdiag" title="Edit Goal">
 
                 <div class= "container" align="left">
-                    <input type="text" placeholder="Event Name" id="eventnam" class="eventnam"> <br><br>
-                    <input type="datetime-local" placeholder="Event Deadline" id="eventdeadline" class="eventdeadline"><br><br>
+                    <input type="text" placeholder="Event Name" id="edit_eventname" class="edit_eventname"> <br><br>
+                    <input type="datetime-local" placeholder="Event Deadline" id="edit_eventdeadline" class="edit_eventdeadline"><br><br>
 
 
-                    <select id = "eventpriority" class = "eventpriority"><br><br>
-
+                    <select id = "edit_eventpriority" class = "eventpriority"><br><br>
                           <option value = "chem" > chem </option>
                           <option value = "ther" > ther </option>
                           <option value = "nucl"> nucl </option>
                     </select>
 
-                    <select id = "eventreminder" class = "eventreminder"><br><br>
+                    <select id = "edit_eventreminder" class = "eventreminder"><br><br>
                         <option value = "daily"> Daily </option>
                         <option value = "weekly"> Weekly </option>
                         <option value = "monthly"> Monthly </option>
@@ -219,6 +218,26 @@
 
               </div>
 
+        </form>
+
+        <form class= "insertdiag" id = "insertdiag"   title="Add New Goal">
+            <div class= "container" align="left">
+              <input type="text" placeholder="Event Name"  id = "ins_eventname" class="ins_eventname"> <br><br>
+              <input type="datetime-local" placeholder="Event Deadline" id = "ins_eventdeadline" class="ins_eventdeadline"> <br><br>
+
+              <select id = "ins_eventpriority" class = "ins_eventpriority"  > <br><br>
+                  <!--<option value="" selected disabled >Priority</option>-->
+                  <option value = "chem"> chem </option>
+                  <option value = "ther"> ther </option>
+                  <option value = "nucl"> nucl </option>
+              </select>
+              <select id = "ins_eventreminder" class = "ins_eventreminder" > <br><br>
+                  <!--<option value="" selected disabled >Remind Me</option>-->
+                  <option value = "daily"> Daily </option>
+                  <option value = "weekly"> Weekly </option>
+                  <option value = "monthly"> Monthly </option>
+              </select>
+            </div>
         </form>
     {% endblock %}
 
