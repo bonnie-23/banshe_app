@@ -27,9 +27,7 @@ function addNew() {
 
 function saveGoal() {
 
-
-    var save = document.getElementById("addgoal")
-
+    var currentdate = new Date().setSeconds(0,0)
 
 
     $("#insertdiag").dialog({
@@ -46,7 +44,7 @@ function saveGoal() {
         buttons: {
                     "save": function () {
 
-                        var currentdate = new Date()
+
                         var name = document.getElementById("ins_eventname").value
                         var deadline = document.getElementById("ins_eventdeadline").value
                         var priority = document.getElementById("ins_eventpriority").value
@@ -55,7 +53,8 @@ function saveGoal() {
                         if(name == "" || deadline == ""){
                             alert("blank values")
                         }
-                        else if (deadline < currentdate){
+
+                        else if (new Date(deadline) <= new Date(currentdate)){
                             alert("select future date and time")
                         }
                         else {
@@ -84,7 +83,7 @@ function saveGoal() {
                         $(this).dialog("close");
                     },
                     "clear": function () {
-                        $(this).dialog("close");
+                        clearForm("insert");
                     }
 
         }
@@ -310,14 +309,15 @@ function getAll() {
 
 
 //clear form contents
-function clearForm() {
+function clearForm(formname) {
 
-    document.getElementById('eventname').value = ''
-    document.getElementById('eventdeadline').value =  ''
-    document.getElementById('eventpriority').value = 'Priority'
-    document.getElementById('eventreminder').value = 'Remind Me'
-    document.getElementById('updategoal').disabled = true
-    document.getElementById('addgoal').disabled = false
+    if (formname == "insert"){
+
+        document.getElementById('ins_eventname').value = ''
+        document.getElementById('ins_eventdeadline').value =  ''
+        document.getElementById('ins_eventpriority').value = 'Priority'
+        document.getElementById('ins_eventreminder').value = 'Remind Me'
+    }
 }
 
 
