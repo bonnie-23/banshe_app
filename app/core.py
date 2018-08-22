@@ -112,15 +112,6 @@ class Event(object):
 
 
 
-
-class DateSlice(Timer):
-    def __init__(self,event):
-        Timer.__init__(self,event)
-        self.day = self.now + timedelta(days = 1)
-        self.week = [self.now,self.now + timedelta(days = 7)]
-        self.month = [self.now,self.now + timedelta(days= 30)]
-
-
 class Timer(object):
     def __init__(self, event):
         self. created_time = event.createdate
@@ -133,6 +124,14 @@ class Timer(object):
     def get_rem_time(self):
         remtime = self.deadline - self.now
         return remtime.days
+
+
+class DateSlice(Timer):
+    def __init__(self,event):
+        Timer.__init__(self,event)
+        self.day = self.now + timedelta(days = 1)
+        self.week = [self.now,self.now + timedelta(days = 7)]
+        self.month = [self.now,self.now + timedelta(days= 30)]
 
 
 class Toggle(object):

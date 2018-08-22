@@ -78,14 +78,14 @@
         }
 
     </style>
-
+<div class= " container w-25 p-3 min-width = 25%">
     <div class="page-header">
-        <button class="btn btn-success btn-block" id = "addgoal" onclick="saveGoal();">Add New Goal</button>
+        <button class="btn btn-success btn-block row" id = "addgoal" onclick="newGoal();">Add New Goal</button>
 
     </div>
 
     <body id = "events" data-events = "{{events}}" onload="javascript:loadPage();">
-       <div>
+       <div class="row">
 
             <label for = "tomorrow">tomorrow
                 <input type = "radio" id = "tomorrow" name="filter" value = "tomorrow" onclick="filterGoals();">
@@ -118,8 +118,6 @@
 
                 {% for event in events['active'] %}
                     <tbody>
-
-
 
                         <tr  class = "goals" onclick="selItem();">
                           <td id="eventname" headers = "event_name" >{{ event['event_name'] }}</td>
@@ -191,8 +189,15 @@
             </table>
         </div> <br>
         <div id="confirmdel"> </div>
+
         <div id="deadlinearr">
-            <label id="notlabel"></label>
+            <label id = "dueevent" class = "dueevent" ></label>
+        </div>
+
+       <div id="duetodaydiag">
+          {% for event in events['duetoday'] %}
+                <ul id="notlabel"></ul>
+          {% endfor %}
         </div>
         <form class= "editdiag" id="editdiag" title="Edit Goal">
 
@@ -208,40 +213,18 @@
                     </select>
 
                     <select id = "edit_eventreminder" class = "eventreminder"><br><br>
-                        <option value = "daily"> Daily </option>
-                        <option value = "weekly"> Weekly </option>
-                        <option value = "monthly"> Monthly </option>
+                        <option value = "daily"> daily </option>
+                        <option value = "weekly"> weekly </option>
+                        <option value = "monthly"> monthly </option>
                      </select>
 
                     <input type="datetime-local" id="eventcreate" name="eventcreate" class="hidden eventcreate"><br><br>
                     <input type="text" id="mongid" name="mongid" class= "hidden mongid">
 
               </div>
-
         </form>
 
-        <form class= "insertdiag" id = "insertdiag"   title="Add New Goal">
-            <div class= "container" align="left">
-              <input type="text" placeholder="Event Name"  id = "ins_eventname" class="ins_eventname"> <br><br>
-              <input type="datetime-local" placeholder="Event Deadline" id = "ins_eventdeadline" class="ins_eventdeadline"> <br><br>
-
-              <select id = "ins_eventpriority" class = "ins_eventpriority"  > <br><br>
-                  <option value="" selected disabled hidden>Priority</option>
-                  <option value = "chem"> chem </option>
-                  <option value = "ther"> ther </option>
-                  <option value = "nucl"> nucl </option>
-              </select>
-              <select id = "ins_eventreminder" class = "ins_eventreminder" > <br><br>
-                  <option value="" selected disabled hidden >Remind Me</option>
-                  <option value = "daily"> Daily </option>
-                  <option value = "weekly"> Weekly </option>
-                  <option value = "monthly"> Monthly </option>
-              </select>
-            </div>
-        </form>
-    {% endblock %}
-
-
-
+       {% endblock %}
 
 </body>
+</div>
