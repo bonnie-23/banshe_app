@@ -338,7 +338,7 @@ function clearForm(formname) {
 
 
 //check every 60 seconds if deadline for goals have arrived
-function loadPage() {
+function loadThings() {
 
     //Hide Edit Form
     var editform = document.getElementById("editdiag");
@@ -360,10 +360,10 @@ function loadPage() {
 
 
     //check for reminders
-    remFrequency()
+//    remFrequency()
 
     //call countdown dialog only once
-    $("#events").one('on', function () {
+    $("#events").one('load', function () {
         countToday();
     })
 
@@ -427,6 +427,7 @@ function loadPage() {
     }
 
 
+
     //Check each goal every 60s to see if deadline has arrived
     interval = setInterval(getDue,60000);
     function getDue() {
@@ -474,11 +475,13 @@ function loadPage() {
         clearInterval(intervalID)
     };
 
+
+
     //show notification based on reminder frequency
     function remFrequency() {
 
         function freq(period) {
-            return 30000 //* 60 * 60 * period;
+            return 3000 * 60 * 60 * period;
         }
 
         for(i=0; i < active_events.length; i++){
@@ -490,29 +493,29 @@ function loadPage() {
 
             while (deadline!=getToday()){
                 if (active_events[i]['event_reminder']=='daily') {
-    //                    setInterval(function () {
-    //                        showNotification( message,'Reminder')
-    //
-    //                    },freq(24))
+                    setInterval(function () {
+                        showNotification( message,'Reminder')
+
+                    },freq(24))
                 }
                 else if (active_events[i]['event_reminder']=='weekly') {
-//                    setInterval(function () {
-//                        showNotification( message,'Reminder')
-//
-//                    },freq(24*7))
+                    setInterval(function () {
+                        showNotification( message,'Reminder')
 
+                    },freq(24*7))
                 }
                 else if (active_events[i]['event_reminder']=='monthly') {
-//                    setInterval(function () {
-//                        showNotification( message,'Reminder')
-//
-//                    },freq(24*30))
+                    setInterval(function () {
+                        showNotification( message,'Reminder')
+
+                    },freq(24*30))
                 }
 
             }
-
+        }
     }
 }
+
 
 //display notification
 function showNotification(name,message) {

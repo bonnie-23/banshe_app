@@ -84,7 +84,7 @@
 
     </div>
 
-    <body id = "events" data-events = "{{events}}" onload="javascript:loadPage();">
+    <body id = "events" data-events = "{{events}}" onload="javascript:loadThings();">
        <div class="row">
 
             <label for = "tomorrow">tomorrow
@@ -191,12 +191,12 @@
         <div id="confirmdel"> </div>
 
         <div id="deadlinearr">
-            <label id = "dueevent" class = "dueevent" ></label>
+            <!--<label id = "dueevent" class = "dueevent" ></label>-->
         </div>
 
        <div id="duetodaydiag">
           {% for event in events['duetoday'] %}
-                <ul id="notlabel"></ul>
+                <label id="notlabel"></label>
           {% endfor %}
         </div>
         <form class= "editdiag" id="editdiag" title="Edit Goal">
@@ -213,9 +213,9 @@
                     </select>
 
                     <select id = "edit_eventreminder" class = "eventreminder"><br><br>
-                        <option value = "daily"> daily </option>
-                        <option value = "weekly"> weekly </option>
-                        <option value = "monthly"> monthly </option>
+                        <option value = "daily"> Daily </option>
+                        <option value = "weekly"> Weekly </option>
+                        <option value = "monthly"> Monthly </option>
                      </select>
 
                     <input type="datetime-local" id="eventcreate" name="eventcreate" class="hidden eventcreate"><br><br>
